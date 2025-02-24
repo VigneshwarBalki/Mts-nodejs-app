@@ -1,0 +1,16 @@
+{
+  "name": "xforia-technologies",
+  "version": "1.0.0",
+  "description": "Static website for Xforia Technologies",
+  "main": "app.mts",
+  "type": "module",
+  "scripts": {
+    "start": "node app.mts"
+  },
+  "dependencies": {
+    "dotenv": "^16.0.3",
+    "express": "^4.18.2",
+    "@datadog/datadog-ci": "^2.11.1",
+    "redis": "^4.6.7"
+  }
+}

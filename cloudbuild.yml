@@ -1,0 +1,36 @@
+steps:
+  # Step 1: Build the Docker image
+  - name: 'gcr.io/cloud-builders/docker'
+    args: ['build', '-t', 'gcr.io/$PROJECT_ID/xforia-app:latest', '.']
+
+  # Step 2: Push the Docker image to Google Container Registry (GCR)
+  - name: 'gcr.io/cloud-builders/docker'
+    args: ['push', 'gcr.io/$PROJECT_ID/xforia-app:latest']
+
+  # Step 3: Deploy the image to Cloud Run
+  - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
+    entrypoint: 'gcloud'
+    args:
+      - 'run'
+      - 'deploy'
+      - 'xforia-app'
+      - '--image=gcr.io/$PROJECT_ID/xforia-app:latest'
+      - '--region=asia-south1'
+      - '--platform=managed'
+      - '--allow-unauthenticated'
+      - '--update-env-vars'
+      - 'REDIS_HOST=10.64.96.12,REDIS_PORT=6379'   # ✅ Redic VPC Use actual values, or Cloud Build Substitutions
+      - '--vpc-connector'
+      - 'redis-vpc-connector'   # ✅ Use actual value, not $VPC_CONNECTOR
+      - '--project'
+      - '$PROJECT_ID'  #✅ This is fine because Cloud Build auto-substitutes $PROJECT_ID
+
+
+substitutions:
+  _DD_API_KEY: 'your-datadog-api-key'
+  _DD_SITE: 'us5.datadoghq.com'
+  _DD_ENV: 'production'
+  _DD_SERVICE: 'xforia-technologies'
+
+images:
+  - 'gcr.io/$PROJECT_ID/xforia-app:latest'
